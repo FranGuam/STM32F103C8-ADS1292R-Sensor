@@ -98,19 +98,12 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     /* Peripheral clock enable */
     __HAL_RCC_SPI1_CLK_ENABLE();
 
-    __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     /**SPI1 GPIO Configuration
-    PA15     ------> SPI1_NSS
     PB3     ------> SPI1_SCK
     PB4     ------> SPI1_MISO
     PB5     ------> SPI1_MOSI
     */
-    GPIO_InitStruct.Pin = ADS1292R_CS_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(ADS1292R_CS_GPIO_Port, &GPIO_InitStruct);
-
     GPIO_InitStruct.Pin = ADS1292R_SCLK_Pin|ADS1292R_MOSI_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
@@ -148,13 +141,10 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
     __HAL_RCC_SPI1_CLK_DISABLE();
 
     /**SPI1 GPIO Configuration
-    PA15     ------> SPI1_NSS
     PB3     ------> SPI1_SCK
     PB4     ------> SPI1_MISO
     PB5     ------> SPI1_MOSI
     */
-    HAL_GPIO_DeInit(ADS1292R_CS_GPIO_Port, ADS1292R_CS_Pin);
-
     HAL_GPIO_DeInit(GPIOB, ADS1292R_SCLK_Pin|ADS1292R_MISO_Pin|ADS1292R_MOSI_Pin);
 
     /* USER CODE BEGIN SPI1_MspDeInit 1 */
