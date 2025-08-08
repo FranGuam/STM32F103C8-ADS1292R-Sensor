@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "ads1292r.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,21 +40,19 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-SPI_HandleTypeDef hspi1;
-
-PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN PV */
+extern uint8_t ADS1292R_data_buf[9]; //ADS1292 data buffer
+extern uint8_t ADS1292R_receive_flag;
 
+uint32_t channel[2] = {0}; //ADS1292R dual channel data
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_SPI1_Init(void);
-static void MX_USB_PCD_Init(void);
-/* USER CODE BEGIN PFP */
 
+/* USER CODE BEGIN PFP */
+uint32_t get_volt(uint32_t num);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -94,7 +92,8 @@ int main(void)
   MX_SPI1_Init();
   MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
-
+  ADS1292R_Init();
+  ADS1292R_ADCStartNormal();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -102,6 +101,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+    channel[0] = get_volt(ADS1292R_data_buf[3] << 16 | ADS1292R_data_buf[4] << 8 | ADS1292R_data_buf[5]); //get ECG data
+    channel[1] = get_volt(ADS1292R_data_buf[6] << 16 | ADS1292R_data_buf[7] << 8 | ADS1292R_data_buf[8]);
 
     /* USER CODE BEGIN 3 */
   }
@@ -159,7 +160,7 @@ void SystemClock_Config(void)
   * @param None
   * @retval None
   */
-static void MX_SPI1_Init(void)
+void MX_SPI1_Init(void)
 {
 
   /* USER CODE BEGIN SPI1_Init 0 */
@@ -197,7 +198,7 @@ static void MX_SPI1_Init(void)
   * @param None
   * @retval None
   */
-static void MX_USB_PCD_Init(void)
+void MX_USB_PCD_Init(void)
 {
 
   /* USER CODE BEGIN USB_Init 0 */
@@ -228,7 +229,7 @@ static void MX_USB_PCD_Init(void)
   * @param None
   * @retval None
   */
-static void MX_GPIO_Init(void)
+void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
@@ -273,6 +274,46 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+/**
+  * @name   get_volt(uint32_t num)
+  *
+  * @brief  Convert the 3 bytes complement to a signed 32-bit number.
+  *
+  * @note
+  *
+  * @param  num: the 3 bytes data you have received.
+  *
+  * @retval A signed 32-bit number
+  */
+uint32_t get_volt(uint32_t num)
+{
+    uint32_t temp;
+    temp = num;
+    temp <<= 8;
+    temp >>= 8;
+    return temp;
+}
+
+/**
+  * @name   HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+  *
+  * @brief  External interrupt callback function.
+  *         When a falling edge on DRDY_Pin, the ADS1292R_receive_flag will
+  *         set to 1 , then SPI will be ready to receive data.
+  *
+  * @note
+  *
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == ADS1292R_DRDY_Pin)
+    {
+        ADS1292R_GetValue();
+        ADS1292R_receive_flag = 1;
+    }
+}
 
 /* USER CODE END 4 */
 
