@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -43,7 +44,7 @@
 
 /* USER CODE BEGIN PV */
 extern uint8_t ADS1292R_data_buf[9]; //ADS1292 data buffer
-extern uint8_t ADS1292R_receive_flag;
+extern volatile uint8_t ADS1292R_receive_flag;
 
 uint32_t channel[2] = {0}; //ADS1292R dual channel data
 /* USER CODE END PV */
@@ -90,10 +91,11 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI1_Init();
-  MX_USB_PCD_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   ADS1292R_Init();
   ADS1292R_ADCStartNormal();
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -101,9 +103,12 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    channel[0] = get_volt(ADS1292R_data_buf[3] << 16 | ADS1292R_data_buf[4] << 8 | ADS1292R_data_buf[5]); //get ECG data
-    channel[1] = get_volt(ADS1292R_data_buf[6] << 16 | ADS1292R_data_buf[7] << 8 | ADS1292R_data_buf[8]);
-
+    if (ADS1292R_receive_flag) {
+      channel[0] = get_volt(ADS1292R_data_buf[3] << 16 | ADS1292R_data_buf[4] << 8 | ADS1292R_data_buf[5]);
+      channel[1] = get_volt(ADS1292R_data_buf[6] << 16 | ADS1292R_data_buf[7] << 8 | ADS1292R_data_buf[8]);
+      CDC_Transmit_FS((uint8_t *)channel, sizeof(channel));
+      ADS1292R_receive_flag = 0;
+    }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -190,37 +195,6 @@ void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
-
-}
-
-/**
-  * @brief USB Initialization Function
-  * @param None
-  * @retval None
-  */
-void MX_USB_PCD_Init(void)
-{
-
-  /* USER CODE BEGIN USB_Init 0 */
-
-  /* USER CODE END USB_Init 0 */
-
-  /* USER CODE BEGIN USB_Init 1 */
-
-  /* USER CODE END USB_Init 1 */
-  hpcd_USB_FS.Instance = USB;
-  hpcd_USB_FS.Init.dev_endpoints = 8;
-  hpcd_USB_FS.Init.speed = PCD_SPEED_FULL;
-  hpcd_USB_FS.Init.low_power_enable = DISABLE;
-  hpcd_USB_FS.Init.lpm_enable = DISABLE;
-  hpcd_USB_FS.Init.battery_charging_enable = DISABLE;
-  if (HAL_PCD_Init(&hpcd_USB_FS) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USB_Init 2 */
-
-  /* USER CODE END USB_Init 2 */
 
 }
 
