@@ -1,9 +1,9 @@
 #include "ads1292r.h"
 
 uint8_t ADS1292R_data_buf[9] = {0}; //ADS1292R receive data buffer
-volatile uint8_t ADS1292R_tmp[9] = {0};
+uint8_t ADS1292R_tmp[9] = {0};
 uint8_t ADS1292R_receive_flag = 0;
-volatile uint8_t ADS1292R_reg[12]; //ADS1292R register array
+uint8_t ADS1292R_reg[12]; //ADS1292R register array
 
 ADS1292_CONFIG1 ADS1292R_config1 = {DATA_RATE_500SPS}; //set sample rate to 500
 
