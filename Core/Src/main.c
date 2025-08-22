@@ -277,9 +277,14 @@ void MX_GPIO_Init(void)
 uint32_t get_volt(uint32_t num)
 {
     uint32_t temp;
-    temp = num;
-    temp <<= 8;
-    temp >>= 8;
+    if (num & 0x800000)
+    {
+        temp = num | 0xFF000000;
+    }
+    else
+    {
+        temp = num & 0x00FFFFFF;
+    }
     return temp;
 }
 
