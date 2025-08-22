@@ -63,14 +63,13 @@ void ADS1292R_SetBuffer(void)
     ADS1292R_reg[ADS1292R_CONFIG1] = 0x00;
     ADS1292R_reg[ADS1292R_CONFIG1] |= ADS1292R_config1.Data_Rate;
 
-    ADS1292R_reg[ADS1292R_CONFIG2] = 0x00;
+    ADS1292R_reg[ADS1292R_CONFIG2] = 0x80;
     ADS1292R_reg[ADS1292R_CONFIG2] |= ADS1292R_config2.Test_Freq;
     ADS1292R_reg[ADS1292R_CONFIG2] |= ADS1292R_config2.Int_Test << 1;
     ADS1292R_reg[ADS1292R_CONFIG2] |= ADS1292R_config2.Clk_EN << 3;
     ADS1292R_reg[ADS1292R_CONFIG2] |= ADS1292R_config2.Vref << 4;
     ADS1292R_reg[ADS1292R_CONFIG2] |= ADS1292R_config2.Pdb_Refbuf << 5;
     ADS1292R_reg[ADS1292R_CONFIG2] |= ADS1292R_config2.Pdb_Loff_Comp << 6;
-    ADS1292R_reg[ADS1292R_CONFIG2] |= 0x80; //set default
 
     ADS1292R_reg[ADS1292R_LOFF] = 0xF0;
 
@@ -84,14 +83,13 @@ void ADS1292R_SetBuffer(void)
     ADS1292R_reg[ADS1292R_CH2SET] |= ADS1292R_ch1set.GAIN << 4;
     ADS1292R_reg[ADS1292R_CH2SET] |= ADS1292R_ch1set.PD << 7;
 
-    ADS1292R_reg[ADS1292R_RLD_SENS] = 0X00;
+    ADS1292R_reg[ADS1292R_RLD_SENS] = 0XC0; //Chop frequency = f_mod / 4
     ADS1292R_reg[ADS1292R_RLD_SENS] |= ADS1292R_rld_sens.Rld1P;
     ADS1292R_reg[ADS1292R_RLD_SENS] |= ADS1292R_rld_sens.Rld1N << 1;
     ADS1292R_reg[ADS1292R_RLD_SENS] |= ADS1292R_rld_sens.Rld2P << 2;
     ADS1292R_reg[ADS1292R_RLD_SENS] |= ADS1292R_rld_sens.Rld2N << 3;
     ADS1292R_reg[ADS1292R_RLD_SENS] |= ADS1292R_rld_sens.Rld_Loff_Sense << 4;
     ADS1292R_reg[ADS1292R_RLD_SENS] |= ADS1292R_rld_sens.Pdb_Rld << 5;
-    ADS1292R_reg[ADS1292R_RLD_SENS] = 0XC0; //set default
 
     ADS1292R_reg[ADS1292R_LOFF_SENS] = 0X00;
     ADS1292R_reg[ADS1292R_LOFF_SENS] |= ADS1292R_loff_sens.Loff1P;
@@ -104,20 +102,18 @@ void ADS1292R_SetBuffer(void)
     ADS1292R_reg[ADS1292R_LOFF_STAT] = 0X00; /*[6]=0 set the ratio between fCLK and fMOD, fCLK=fMOD/4
                                             [4:0]read only, set status of lead-off and elevtrode status */
 
-    ADS1292R_reg[ADS1292R_RESP1] = 0X00;
+    ADS1292R_reg[ADS1292R_RESP1] = 0X02;
     ADS1292R_reg[ADS1292R_RESP1] |= ADS1292R_resp1.RESP_Ctrl;
     ADS1292R_reg[ADS1292R_RESP1] |= ADS1292R_resp1.RESP_ph << 2;
     ADS1292R_reg[ADS1292R_RESP1] |= ADS1292R_resp1.RESP_modEN << 6;
     ADS1292R_reg[ADS1292R_RESP1] |= ADS1292R_resp1.RESP_DemodEN << 7;
-    ADS1292R_reg[ADS1292R_RESP1] = 0X02; //set default
 
-    ADS1292R_reg[ADS1292R_RESP2] = 0X00;
+    ADS1292R_reg[ADS1292R_RESP2] = 0X01;
     ADS1292R_reg[ADS1292R_RESP2] |= ADS1292R_resp2.Rldref_Int << 1;
     ADS1292R_reg[ADS1292R_RESP2] |= ADS1292R_resp2.freq << 2;
     ADS1292R_reg[ADS1292R_RESP2] |= ADS1292R_resp2.Calib << 7;
-    ADS1292R_reg[ADS1292R_RESP2] = 0X01;
 
-    ADS1292R_reg[ADS1292R_GPIO] = 0X0C; /* GPIO set input [7:4] must be 0
+    ADS1292R_reg[ADS1292R_GPIO] = 0X04; /* GPIO set input [7:4] must be 0
                                                     [3:2]==11 GPIO is input
                                                     [1:0] when set input，return GPIO status;
                                                     when set output , set the output value*/
