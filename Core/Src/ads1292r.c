@@ -15,11 +15,11 @@ ADS1292_CONFIG2 ADS1292R_config2 = {PDB_LOFF_COMP_ON, //Lead-off comparators ena
                                     TEST_FREQ_DC};    //set test signal ferquency is DC
 
 ADS1292_CHSET ADS1292R_ch1set = {PD_ON,             //ch1 power on
-                                 GAIN_2,            //set PGA gain is 2
+                                 GAIN_4,            //set PGA gain is 4
                                  MUX_Normal_input}; //normal electrode input
 
 ADS1292_CHSET ADS1292R_ch2set = {PD_ON,             //ch2 power on
-                                 GAIN_6,            //set PGA gain is 6
+                                 GAIN_8,            //set PGA gain is 8
                                  MUX_Normal_input}; //normal electrode input
 
 ADS1292_RLD_SENS ADS1292R_rld_sens = {PDB_RLD_ON,         //RLD buffer power on
